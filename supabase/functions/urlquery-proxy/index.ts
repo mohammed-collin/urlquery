@@ -10,6 +10,43 @@ const URLQUERY_API_KEY = Deno.env.get('URLQUERY_API_KEY');
 const API_BASE = 'https://api.urlquery.net';
 const API_VERSION = '/public/v1';
 
+type URLQueryApiUrlData = {
+  addr?: string;
+  address?: string;
+  schema?: string;
+  scheme?: string;
+  ip?: string;
+  ipv4?: string;
+  ip_address?: string;
+  domain?: string;
+  fqdn?: string;
+  hostname?: string;
+  country?: string;
+  country_name?: string;
+  country_code?: string;
+  cc?: string;
+};
+
+type URLQueryApiReport = {
+  report_id: string;
+  url?: URLQueryApiUrlData;
+  url_addr?: string;
+  ip?: string;
+  country?: string;
+  country_code?: string;
+  stats?: { alert_count?: { urlquery?: number } };
+  tags?: string[];
+  date?: string;
+  scan_date?: string;
+  created_at?: string;
+  score?: number;
+};
+
+type URLQueryApiResponse = {
+  reports?: URLQueryApiReport[];
+  total_hits?: number;
+};
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -87,7 +124,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const data = await response.json();
+    const data: URLQueryApiResponse = await response.json();
 
     console.log('URLQuery API raw response sample:', JSON.stringify({
       totalReports: data.reports?.length || 0,
@@ -96,7 +133,7 @@ Deno.serve(async (req: Request) => {
       firstReportUrl: data.reports?.[0]?.url || null,
     }, null, 2));
 
-    const processedResults = (data.reports || []).map((report: any) => {
+    const processedResults = (data.reports || []).map((report: URLQueryApiReport) => {
       const urlData = report.url || {};
 
       const urlAddr = urlData.addr || urlData.address || report.url_addr || '';

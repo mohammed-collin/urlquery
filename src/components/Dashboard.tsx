@@ -8,12 +8,6 @@ interface DashboardProps {
   results: URLQuerySearchResult[];
 }
 
-interface TagStats {
-  tag: string;
-  count: number;
-  color: string;
-}
-
 export default function Dashboard({ results }: DashboardProps) {
   const tagStats = useMemo(() => {
     const tagCounts: Record<string, number> = {};

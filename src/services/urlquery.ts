@@ -1,5 +1,13 @@
 import type { URLQuerySearchResponse, URLQuerySearchResult } from '../types/urlquery';
 
+interface ProxySearchResponse {
+  ok: boolean;
+  error?: string;
+  results?: URLQuerySearchResult[];
+  count?: number;
+  query?: string;
+}
+
 export class URLQueryService {
   private apiKey: string;
   private supabaseUrl: string;
@@ -32,13 +40,13 @@ export class URLQueryService {
         throw new Error(`Proxy request failed (HTTP ${response.status}): ${errorText}`);
       }
 
-      const data = await response.json();
+      const data: ProxySearchResponse = await response.json();
 
       if (!data.ok) {
         throw new Error(data.error || 'Unknown error from proxy');
       }
 
-      const results: URLQuerySearchResult[] = (data.results || []).map((report: any) => ({
+      const results: URLQuerySearchResult[] = (data.results || []).map((report: URLQuerySearchResult) => ({
         ...report,
         screenshotUrl: this.getScreenshotUrl(report.report_id),
       }));
