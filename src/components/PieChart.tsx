@@ -12,7 +12,7 @@ interface PieChartProps {
 export default function PieChart({ data, onSegmentClick }: PieChartProps) {
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
 
-  const { segments, total, topSegments, otherSegment } = useMemo(() => {
+  const { total, topSegments } = useMemo(() => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
     const TOP_COUNT = 6;
 
@@ -53,19 +53,8 @@ export default function PieChart({ data, onSegmentClick }: PieChartProps) {
     });
 
     return {
-      segments: data.map((item, idx) => ({
-        ...item,
-        percentage: (item.value / total) * 100,
-        index: idx,
-      })),
       total,
       topSegments,
-      otherSegment: otherValue > 0 ? {
-        label: 'Other',
-        value: otherValue,
-        percentage: (otherValue / total) * 100,
-        tags: otherData,
-      } : null,
     };
   }, [data]);
 
